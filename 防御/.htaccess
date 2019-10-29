@@ -1,0 +1,10 @@
+<Directory "/var/www/html/uploads">
+Options -ExecCGI -Indexes
+AllowOverride None
+RemoveHandler .php .phtml .php3 .pht .php4 .php5 .php7 .shtml
+RemoveType .php .phtml .php3 .pht .php4 .php5 .php7 .shtml
+php_flag engine off
+<FilesMatch ".+\.ph(p[3457]?|t|tml)$">
+deny from all
+</FilesMatch>
+</Directory>

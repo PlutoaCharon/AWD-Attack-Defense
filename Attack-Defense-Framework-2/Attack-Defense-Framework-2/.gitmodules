@@ -1,0 +1,15 @@
+[submodule "services/Sirius"]
+	path = services/Sirius
+	url = git@github.com:WangYihang/Sirius.git
+[submodule "services/Railgun"]
+	path = services/Railgun
+	url = git@github.com:WangYihang/Railgun.git
+[submodule "services/Submittor"]
+	path = services/Submittor
+	url = git@github.com:WangYihang/Submittor.git
+[submodule "services/Webshell"]
+	path = services/Webshell
+	url = git@github.com:WangYihang/Webshell-Sniper.git
+[submodule "services/IDArling"]
+	path = services/IDArling
+	url = https://github.com/IDArlingTeam/IDArling.git

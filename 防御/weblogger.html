@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width initial-scale=1.0, user-scalable=yes">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>针对php的web流量抓取、分析的应用 - 汪洋大海 – 蜗居</title>
+<meta name="description" content="一个针对php的web流量抓取、分析的应用。" />
+<meta name="keywords" content="" />
+<link rel="shortcut icon" href="https://woj.app/wp-content/themes/Ality/img/favicon.ico">
+<link rel="apple-touch-icon" sizes="114x114" href="https://woj.app/wp-content/themes/Ality/img/favicon.png" />
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://woj.app/xmlrpc.php">
+<!--[if lt IE 9]><script src="https://woj.app/wp-content/themes/Ality/js/html5-css3.js"></script><![endif]-->
+<!--[if lt IE 8]><link rel="stylesheet" href="https://woj.app/wp-content/themes/Ality/css/ie7/ie7.css" /><![endif]-->
+<!--[if lt IE 7]><script src="https://woj.app/wp-content/themes/Ality/js/ie6.js" type="text/javascript"></script><![endif]-->
+<link rel='dns-prefetch' href='//s.w.org' />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/woj.app\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.2.4"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55357,56424,55356,57342,8205,55358,56605,8205,55357,56424,55356,57340],[55357,56424,55356,57342,8203,55358,56605,8203,55357,56424,55356,57340]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-syntax-css-css'  href='https://woj.app/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='style-css'  href='https://woj.app/wp-content/themes/Ality/style.css?ver=2014.11.20' type='text/css' media='all' />
+<link rel='stylesheet' id='mediaqueries-css'  href='https://woj.app/wp-content/themes/Ality/css/mediaqueries.css?ver=1.0' type='text/css' media='all' />
+<link rel='stylesheet' id='highlight-css'  href='https://woj.app/wp-content/themes/Ality/css/highlight.css?ver=1.0' type='text/css' media='all' />
+<script type='text/javascript' src='https://woj.app/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp'></script>
+<script type='text/javascript' src='https://woj.app/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<script type='text/javascript' src='https://woj.app/wp-content/themes/Ality/js/jquery.min.js?ver=1.10.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var wpl_ajax_url = "https:\/\/woj.app\/wp-admin\/admin-ajax.php";
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://woj.app/wp-content/themes/Ality/js/script.js?ver=1.0'></script>
+<script type='text/javascript' src='https://woj.app/wp-content/themes/Ality/js/jquery.fancybox.js?ver=2.15'></script>
+<script type='text/javascript' src='https://woj.app/wp-content/themes/Ality/js/comments-ajax.js?ver=1.3'></script>
+<link rel='https://api.w.org/' href='https://woj.app/wp-json/' />
+<link rel="canonical" href="https://woj.app/5166.html" />
+<link rel="alternate" type="application/json+oembed" href="https://woj.app/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwoj.app%2F5166.html" />
+<link rel="alternate" type="text/xml+oembed" href="https://woj.app/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwoj.app%2F5166.html&#038;format=xml" />
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-1989850126214729",
+          enable_page_level_ads: true
+     });
+</script>
+</head>
+<body class="post-template-default single single-post postid-5166 single-format-standard">
+<div id="page" class="page-site">
+	<div id="header-top">
+		<nav id="top-nav" class="main-nav">
+			<div class="home_h"><i class="icon-home_h"><a href="https://woj.app" title="返回首页"></a></i></div>
+			<div class="menu-%e8%8f%9c%e5%8d%951-container"><ul id="menu-%e8%8f%9c%e5%8d%951" class="menu"><li id="menu-item-17" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-17"><a title="俺的简介" href="https://woj.app/about-me">[关于俺]</a></li>
+<li id="menu-item-859" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-859"><a title="按时间显示本博客所有的文字列表。" href="https://woj.app/archives">文章归档</a></li>
+<li id="menu-item-858" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-858"><a title="小伙伴的博客地址" href="https://woj.app/youlink">友情链接</a></li>
+<li id="menu-item-2702" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2702"><a title="Burp Post、Get数据包转为上传multipart/form-data格式数据包工具" href="http://ld8.me/multipart.php">Burp 数据包在线转换工具</a></li>
+</ul></div>			<div class="clear"></div>
+		</nav>
+	</div>
+	<div id="simple-top">
+	<a id="simple-menu" href="#sidr"><i class="icon-simple-menu"></i></a>
+	</div>
+		<header id="header">
+			<div class="header-clear"></div>
+			<div class="main-header">
+				<hgroup class="logo-main">
+	<div class="title-main">
+		<h1 class="site-title"><a href="https://woj.app/" rel="home">蜗居</a></h1>
+		<h2 id="site-description">大海中的一只虾，汪洋中的一个家。https://woj.app → 蜗居  (虾米的蜗居)</h2>
+	</div>
+</hgroup>
+				<div id="set-main">
+	<div id="nav-search">
+		<a class="menu-search" href="#">搜索</a>
+	</div>
+	<div id="nav-login">
+		<a href="#login" class="flatbtn" id="login-main" >登录</a>	</div>
+</div>									<div id="bulletin_div" class="bulletin_div">
+	<div id="bulletin_begin">
+		<ul>
+								</ul>
+	</div>
+	<div id="bulletin_end"></div>
+</div>
+<script type="text/javascript">ScrollImgLeft();</script>							</div>
+			<div class="clear"></div>
+			<div id="search-main">
+			
+<div id="searchbar">
+	<form method="get" id="searchform" action="https://woj.app/">
+		<div><input type="text" value="" name="s" id="s" placeholder="输入搜索内容" required />
+		<input type="submit" id="searchsubmit" value="搜索" />
+		</div>
+	</form>
+</div>			<!-- <form action="https://zhannei.baidu.com/cse/search" target="_blank">
+	<input type="hidden" value="16790889802579552522" name="s">
+	<input type="hidden" value="1" name="entry">
+	<input class="swap_value" placeholder="请输入关键词" name="q">
+	<input type="submit" class="submit" name="submit" id="searchsubmit" value="百度">
+</form> -->
+		   </div>
+			<div class="clear"></div>
+			<nav id="site-nav" class="main-nav">
+				<div class="menu-%e8%8f%9c%e5%8d%952-container"><ul id="menu-%e8%8f%9c%e5%8d%952" class="menu"><li id="menu-item-851" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-851"><a title="虾米的蜗居首页" href="https://woj.app/">网站首页</a></li>
+<li id="menu-item-850" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-850"><a title="本博主的个人日记，生活感慨！" href="https://woj.app/category/personal-diary">个人日记</a></li>
+<li id="menu-item-848" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-848"><a title="【所有文章为原创】本人学习到的知识的记录，点点滴滴。" href="https://woj.app/category/the-study-notes">学习笔记</a></li>
+<li id="menu-item-1473" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1473"><a title="【所有文章为原创】本人各大sec等平台安全文章纪实。" href="https://woj.app/category/invasion_penetration">漏洞安全</a></li>
+<li id="menu-item-849" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-849"><a title="【所有文章为转载】知识的汪洋，汇集网络精彩！" href="https://woj.app/category/water">汪洋大海</a></li>
+<li id="menu-item-4707" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-4707"><a href="https://woj.app/category/soft">精品软件</a></li>
+<li id="menu-item-1733" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-1733"><a href="https://woj.app/category/music">音乐之声</a>
+<ul class="sub-menu">
+	<li id="menu-item-1741" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1741"><a href="https://woj.app/category/music/jingdian-old-music">经典老歌</a></li>
+	<li id="menu-item-1738" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1738"><a href="https://woj.app/category/music/trend-music">流行新曲</a></li>
+	<li id="menu-item-1737" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1737"><a href="https://woj.app/category/music/dj">劲爆嗨曲</a></li>
+	<li id="menu-item-1740" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1740"><a href="https://woj.app/category/music/absolute-music">纯音乐</a></li>
+	<li id="menu-item-1742" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1742"><a href="https://woj.app/category/music/beijing-music">背景配乐</a></li>
+	<li id="menu-item-1739" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1739"><a href="https://woj.app/category/music/game-bgm-music">游戏BGM</a></li>
+</ul>
+</li>
+</ul></div>				<ul><li class="fill"></li></ul>
+			</nav>
+			<!-- #site-nav -->
+			<div class="clear"></div>
+		</header>
+		<!-- #header -->
+
+	<div id="main" class="wrapper">
+		
+
+		<nav class="crumbs">现在位置： <a title="返回首页" href="https://woj.app">首页</a> &gt; <a href="https://woj.app/category/water" rel="category tag">汪洋大海</a> &gt;  正文 </nav>
+				<div id="primary" class="site-content">
+		<div class="single-content">
+		
+<article id="post-5166" class="post-5166 post type-post status-publish format-standard hentry category-water">
+	<div class="fontsize"><span class="smaller" >A-</span><span class="bigger" >A+</span></div>
+	<header class="single-header">
+		<h1 class="single-title">针对php的web流量抓取、分析的应用</h1>
+		<div class="single-meta">
+			<span class="date"><i class="icon-date"></i>2019年04月29日 15:22</span>
+			<span class="cat"><i class="icon-cat"></i><a href="https://woj.app/category/water" rel="category tag">汪洋大海</a></span>
+			<span class="comment"><i class="icon-comment"></i><a href="https://woj.app/5166.html#respond">暂无评论</a></span>
+			<span class="views"><i class="icon-views"></i>阅读 216 views 次</span>					</div>
+		<!-- .entry-meta -->
+	</header>
+	<!-- .single-header -->
+
+			
+		
+	<div class="single-main">
+		<div class="content-main">
+						<h2>一个针对php的web流量抓取、分析的应用。</h2>
+<p>可供ctf线下赛使用，也可用于实际场景来抓web流量、分析攻击手段。</p>
+<p><a href="https://github.com/wupco/weblogger/blob/master/index.png" target="_blank" rel="noopener noreferrer" class="cboxElement" rel="example_group"5166><img class="aligncenter" src="https://github.com/wupco/weblogger/raw/master/index.png" alt="" /></a></p>
+<p>目前主要功能如下：</p>
+<ol>
+<li>完整http报文请求抓取，同时进行对可能存在的攻击进行分类，通过文件存储模拟出数据库，适应各种场合。</li>
+<li>根据hash判断流量是否重复，只记录次数和最新一次的请求包，减少存储空间的占用以及流量分析的成本。</li>
+<li>4个waf等级，推荐使用1等级，不会影响应用的正常运行，还可以抵御绝大多数的常见攻击。</li>
+<li>设置flag获取命令，通过分析页面返回判断是否被读取了flag，从而替换掉flag（有些场合可能无法使用），将此流量标记为危险流量，同时攻击者ip加入黑名单，永 久ban掉（可从黑名单去除）。</li>
+<li>黑白名单模式，可以手动添加，选择白名单模式，则服务正常通过给白名单机器，其他机器全部拦截。</li>
+<li>可根据ip、时间筛选出想要查看的对应日志。</li>
+<li>通过分析是否为危险流量，统计相同流量出现次数，显示出最可能是最终payload的流量排行。</li>
+<li>一键生成ctf线下赛exp（获取flag+自动提交flag），快人一步进行攻击（除了正常攻击流量外，exp中还包含大量垃圾混淆流量）</li>
+<li>删除并压缩备份选中的流量。</li>
+<li>因流量转发太过不公平，不考虑添加。</li>
+</ol>
+<h2><a id="user-content-使用方法" class="anchor" href="https://github.com/wupco/weblogger#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95" aria-hidden="true"></a>使用方法：</h2>
+<pre class="codehilite"><code>   cd /var/www/html/ (or other web dir)
+   
+   git clone https://github.com/wupco/weblogger.git
+   
+   chmod -R 777 weblogger/
+   
+   open http://xxxxx/weblogger/install.php in Web browser
+   
+   install it
+   
+   
+
+</code></pre>
+<p>更详细说明和帮助： https://gist.github.com/wupco/ee26f88656fbf36d014f49b4ac47ddc8</p>
+<h2><a id="user-content-说明" class="anchor" href="https://github.com/wupco/weblogger#%E8%AF%B4%E6%98%8E" aria-hidden="true"></a>说明:</h2>
+<p>weblogger 分为静态文件群和动态文件群：</p>
+<p>动态文件群：</p>
+<ul>
+<li>所有流量数据与脚本模板均存储在tmp目录下，所以要保证tmp目录的持续可写。</li>
+</ul>
+<p>静态文件群：</p>
+<ul>
+<li>web管理页面存在web目录下的一个新建文件中，所以要保证web目录的可写(待install.php生成管理文件结束后可设置目录不可写)</li>
+</ul>
+<p>&nbsp;</p>
+<p>软件地址：https://github.com/wupco/weblogger</p>
+<p>&nbsp;</p>
+<p>更详细的介绍请看下面：</p>
+<ol>
+<li>在web目录或其他目录 git clone <a href="https://github.com/wupco/weblogger.git">https://github.com/wupco/weblogger.git</a> 注意给当前目录可写..不然clone不进来 <a href="https://camo.githubusercontent.com/fbb5ce13c2c0f728afa4a3213cce2db491ce6fab/68747470733a2f2f692e696d6775722e636f6d2f654656503578512e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/fbb5ce13c2c0f728afa4a3213cce2db491ce6fab/68747470733a2f2f692e696d6775722e636f6d2f654656503578512e706e67" alt="" data-canonical-src="https://i.imgur.com/eFVP5xQ.png" /></a></li>
+<li>给目录权限，可以给777，因为这个目录没用，安装完会自动销毁 <a href="https://camo.githubusercontent.com/cf8b54a5299ffd4c911523be809bd5755b65965c/68747470733a2f2f692e696d6775722e636f6d2f44444a706d36742e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/cf8b54a5299ffd4c911523be809bd5755b65965c/68747470733a2f2f692e696d6775722e636f6d2f44444a706d36742e706e67" alt="" data-canonical-src="https://i.imgur.com/DDJpm6t.png" /></a></li>
+<li>检查自己的php.ini，有没有禁用掉system等系统函数(disable_functions)，如果禁用了，暂时先打开，因为安装时移动文件的操作用的是<code>system("mv xxx")；</code></li>
+<li>打开浏览器安装</li>
+</ol>
+<hr />
+<p><a href="https://camo.githubusercontent.com/80d3886a7cce44ded522bde9d3b619d6e40bedd0/68747470733a2f2f692e696d6775722e636f6d2f6571736659764e2e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/80d3886a7cce44ded522bde9d3b619d6e40bedd0/68747470733a2f2f692e696d6775722e636f6d2f6571736659764e2e706e67" alt="" data-canonical-src="https://i.imgur.com/eqsfYvN.png" /></a></p>
+<p>这里的数据存储路径就是数据部分存储的位置，建议采用类似tmp目录一样的各种权限都有的目录，方便处理。web根目录则是输出管理页面的位置，这个目录一定要有写权限。</p>
+<p>因为环境的问题，有的php-fpm将每个Web用户的tmp文件都放在沙箱隔离，导致后来写入tmp下的文件实际路径不在tmp下，这种情况建议按照 <a href="https://www.cnblogs.com/lihuobao/p/5624071.html" rel="nofollow">https://www.cnblogs.com/lihuobao/p/5624071.html</a> 解决，也可以将数据部分写入 <code>/var/tmp/</code>下</p>
+<hr />
+<p><a href="https://camo.githubusercontent.com/9872dd88894f0cd2f40a552cab4806bfe1ba6b13/68747470733a2f2f692e696d6775722e636f6d2f6a6964685877322e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/9872dd88894f0cd2f40a552cab4806bfe1ba6b13/68747470733a2f2f692e696d6775722e636f6d2f6a6964685877322e706e67" alt="" data-canonical-src="https://i.imgur.com/jidhXw2.png" /></a>获取flag的命令用于读取flag来自动替换别人读到的flag，从而让其他人读不到正确的flag，所以输入一个可以读到flag的系统命令即可。 账号密码是管理页面的账号密码，尽量不要弱口令，填一个比较难爆破的。</p>
+<hr />
+<p><a href="https://camo.githubusercontent.com/3c625b3b4ecdba9457a9af6d4c6c1414fa70fbe8/68747470733a2f2f692e696d6775722e636f6d2f695766494568652e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/3c625b3b4ecdba9457a9af6d4c6c1414fa70fbe8/68747470733a2f2f692e696d6775722e636f6d2f695766494568652e706e67" alt="" data-canonical-src="https://i.imgur.com/iWfIEhe.png" /></a>出现这个页面代表安装成功了，这时你先别关掉这个页面，去检查一下你的web目录下git clone的那个目录还存在不存在，正常会进行自我销毁，如果没销毁成功，应该是某些权限配置不对或者system被禁用了。</p>
+<p>上面那个tmp的路径用来在web入口处包含 下面的是管理页面的路径</p>
+<ol start="5">
+<li>在web入口处或指定文件包含第一行的文件</li>
+</ol>
+<p>在index.php 代码中插入 <code>require_once('/tmp/33253f64133730fabaa52a487ff98740/weblogpro.php');</code> 就ok了</p>
+<p>下面的命令可以批量包含</p>
+<div class="highlight highlight-source-shell">
+<pre class="codehilite"><code>find /var/www/html/ -path /var/www/html/124687a7bc37d57cc9ecd1cbd9d676f7 -prune -o  -type f -name <span class="pl-s"><span class="pl-pds">'</span>*.php<span class="pl-pds">'</span></span><span class="pl-k">|</span>xargs  sed -i <span class="pl-s"><span class="pl-pds">'</span>1i&lt;?php require_once("/tmp/33253f64133730fabaa52a487ff98740/weblogpro.php");?&gt;<span class="pl-pds">'</span></span></code></pre>
+</div>
+<p><a href="https://camo.githubusercontent.com/44c566e0ed16c1e728d1460acd539523b6d70577/68747470733a2f2f692e696d6775722e636f6d2f663731444745522e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/44c566e0ed16c1e728d1460acd539523b6d70577/68747470733a2f2f692e696d6775722e636f6d2f663731444745522e706e67" alt="" data-canonical-src="https://i.imgur.com/f71DGER.png" /></a></p>
+<p>访问 <code>http://127.0.0.1/124687a7bc37d57cc9ecd1cbd9d676f7/2cf8e3f14841b6b9b11570eca7e33017/managelog.php</code> 登录，刷新页面，之后所有访问index.php的记录都会在这里看到。 <a href="https://camo.githubusercontent.com/68ed1d641d2de740ab2374d1f5cb0aa67cc0b6ad/68747470733a2f2f692e696d6775722e636f6d2f596872726a78542e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/68ed1d641d2de740ab2374d1f5cb0aa67cc0b6ad/68747470733a2f2f692e696d6775722e636f6d2f596872726a78542e706e67" alt="" data-canonical-src="https://i.imgur.com/YhrrjxT.png" /></a></p>
+<p>这里可以显示全部header <a href="https://camo.githubusercontent.com/146c7bf712204df50b7e435a3e76498216ee87d2/68747470733a2f2f692e696d6775722e636f6d2f3963786f5a5a322e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/146c7bf712204df50b7e435a3e76498216ee87d2/68747470733a2f2f692e696d6775722e636f6d2f3963786f5a5a322e706e67" alt="" data-canonical-src="https://i.imgur.com/9cxoZZ2.png" /></a></p>
+<p>tools可以显示一些工具：按照时间筛选流量、删除打包流量、获取复合流量exp等 <a href="https://camo.githubusercontent.com/420b506a6fc8e83c9d9f33026c178620d97e2d1f/68747470733a2f2f692e696d6775722e636f6d2f506136417254512e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/420b506a6fc8e83c9d9f33026c178620d97e2d1f/68747470733a2f2f692e696d6775722e636f6d2f506136417254512e706e67" alt="" data-canonical-src="https://i.imgur.com/Pa6ArTQ.png" /></a></p>
+<p>点击get poc <a href="https://camo.githubusercontent.com/443713ed53244ef98c25c5a08a5564fd49398e3f/68747470733a2f2f692e696d6775722e636f6d2f37734461584f442e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/443713ed53244ef98c25c5a08a5564fd49398e3f/68747470733a2f2f692e696d6775722e636f6d2f37734461584f442e706e67" alt="" data-canonical-src="https://i.imgur.com/7sDaXOD.png" /></a> 会下载一个python文件 <a href="https://camo.githubusercontent.com/36fb1cc7b0cad3d02733cbb1f666930147084bbd/68747470733a2f2f692e696d6775722e636f6d2f6d304f4f3666632e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/36fb1cc7b0cad3d02733cbb1f666930147084bbd/68747470733a2f2f692e696d6775722e636f6d2f6d304f4f3666632e706e67" alt="" data-canonical-src="https://i.imgur.com/m0OO6fc.png" /></a></p>
+<p>具体需要你修改的部分如下： <a href="https://camo.githubusercontent.com/3e98e164746bbf0fd0c04c60d2888e03cf430ca6/68747470733a2f2f692e696d6775722e636f6d2f4e31496d4936452e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/3e98e164746bbf0fd0c04c60d2888e03cf430ca6/68747470733a2f2f692e696d6775722e636f6d2f4e31496d4936452e706e67" alt="" data-canonical-src="https://i.imgur.com/N1ImI6E.png" /></a></p>
+<p>需要你在python脚本同目录下创建一个ip.txt，每一行输入一个要攻击的队伍ip</p>
+<p>这个python文件会自动重放你get poc对应的流量到你指定的ip，拿到flag并自动提交到平台，而且会发送大量干扰流量，使得对手做流量分析十分困难。</p>
+<h4><a id="user-content-如果想要按照某个顺序重放多个流量怎么办例如有登录到后台再getshell的场景" class="anchor" href="https://gist.github.com/wupco/ee26f88656fbf36d014f49b4ac47ddc8#%E5%A6%82%E6%9E%9C%E6%83%B3%E8%A6%81%E6%8C%89%E7%85%A7%E6%9F%90%E4%B8%AA%E9%A1%BA%E5%BA%8F%E9%87%8D%E6%94%BE%E5%A4%9A%E4%B8%AA%E6%B5%81%E9%87%8F%E6%80%8E%E4%B9%88%E5%8A%9E%E4%BE%8B%E5%A6%82%E6%9C%89%E7%99%BB%E5%BD%95%E5%88%B0%E5%90%8E%E5%8F%B0%E5%86%8Dgetshell%E7%9A%84%E5%9C%BA%E6%99%AF" aria-hidden="true"></a>如果想要按照某个顺序重放多个流量怎么办？（例如有登录到后台再getshell的场景）</h4>
+<p>按照流量的id，填入<a href="https://camo.githubusercontent.com/1df1b44ce7d865e5d25f79e8cb7e9e13f05c4d44/68747470733a2f2f692e696d6775722e636f6d2f78597a764c424c2e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/1df1b44ce7d865e5d25f79e8cb7e9e13f05c4d44/68747470733a2f2f692e696d6775722e636f6d2f78597a764c424c2e706e67" alt="" data-canonical-src="https://i.imgur.com/xYzvLBL.png" /></a>用英文逗号分割，例如 5,2,3,2,1 会依次重放id=5的流量、id=2的流量、id=3的流量、id=2的流量、id=1的流量。</p>
+<p>第二个菜单栏，iplist，可以列出所有访问ip，点击对应ip会筛选相应ip的流量 <a href="https://camo.githubusercontent.com/ce95f212bd0f0b19895c9b612f08033e216a83b0/68747470733a2f2f692e696d6775722e636f6d2f5a4d44507076522e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/ce95f212bd0f0b19895c9b612f08033e216a83b0/68747470733a2f2f692e696d6775722e636f6d2f5a4d44507076522e706e67" alt="" data-canonical-src="https://i.imgur.com/ZMDPpvR.png" /></a></p>
+<p>第三个栏，risk high ，当其他人通过Web应用拿到flag时，会将该流量记录在risk high中。</p>
+<p>第四个栏，<a href="https://camo.githubusercontent.com/50c2dd0984bef2039f24437e7a784decc64a0880/68747470733a2f2f692e696d6775722e636f6d2f43714c625678302e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/50c2dd0984bef2039f24437e7a784decc64a0880/68747470733a2f2f692e696d6775722e636f6d2f43714c625678302e706e67" alt="" data-canonical-src="https://i.imgur.com/CqLbVx0.png" /></a> 根据几个判断条件，按照是exp的可能性排序所有流量。</p>
+<p>在tmp下 <a href="https://camo.githubusercontent.com/247c22ed426da8d727b2ea35d92368fdedca3bd3/68747470733a2f2f692e696d6775722e636f6d2f5a5377705276382e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/247c22ed426da8d727b2ea35d92368fdedca3bd3/68747470733a2f2f692e696d6775722e636f6d2f5a5377705276382e706e67" alt="" data-canonical-src="https://i.imgur.com/ZSwpRv8.png" /></a>可配置参数 <a href="https://camo.githubusercontent.com/a9ca9b119e31d95cf373e9285cc7362ab5e4404c/68747470733a2f2f692e696d6775722e636f6d2f576b42456d48502e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/a9ca9b119e31d95cf373e9285cc7362ab5e4404c/68747470733a2f2f692e696d6775722e636f6d2f576b42456d48502e706e67" alt="" data-canonical-src="https://i.imgur.com/WkBEmHP.png" /></a></p>
+<p>其他可修改文件 <a href="https://camo.githubusercontent.com/2fe05544aee377e037f66cac169a3392a3c39270/68747470733a2f2f692e696d6775722e636f6d2f595041737957692e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/2fe05544aee377e037f66cac169a3392a3c39270/68747470733a2f2f692e696d6775722e636f6d2f595041737957692e706e67" alt="" data-canonical-src="https://i.imgur.com/YPAsyWi.png" /></a>黑白名单按照一行一个ip来计算，默认开启黑名单模式，当攻击者拿到flag后会自动将他加到黑名单。 白名单模式则需要你手动将checker的ip填入白名单并配置到白名单模式。</p>
+<p>其他有用的文件 <a href="https://camo.githubusercontent.com/5ceac7800745b4d7140bb6a424b4f737d069faad/68747470733a2f2f692e696d6775722e636f6d2f5332384b7378772e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/5ceac7800745b4d7140bb6a424b4f737d069faad/68747470733a2f2f692e696d6775722e636f6d2f5332384b7378772e706e67" alt="" data-canonical-src="https://i.imgur.com/S28Ksxw.png" /></a> 这个bash运行起来会不停的kill掉www-data起的服务，通常都是内存马、不死马，可以放心使用（因为重要服务都不是www用户起的）。 运行这个bash的方法： 和managelog.php 既管理页面同目录下有个killer.php <a href="https://camo.githubusercontent.com/51c9812a32e1990322a0d94e996834ab4582e06c/68747470733a2f2f692e696d6775722e636f6d2f576674383067782e706e67" target="_blank" rel="noopener noreferrer"><img src="https://camo.githubusercontent.com/51c9812a32e1990322a0d94e996834ab4582e06c/68747470733a2f2f692e696d6775722e636f6d2f576674383067782e706e67" alt="" data-canonical-src="https://i.imgur.com/Wft80gx.png" /></a>直接在浏览器访问即可。</p>
+		</div>
+								<div class="clear"></div>
+	</div>
+	<!-- .single-content -->
+</article>
+
+		<div id="social">
+	<div class="lrewards-popover-mask lrewards-close"></div> <div class="lrewards-popover"> <h3>布施恩德可便相知重</h3> <div class="lrewards-popover-item"> <h4>微信扫一扫打赏</h4> <img src="/wp-content/themes/Ality/img/weixin.jpg"> </div> <div class="lrewards-popover-item"> <h4>支付宝扫一扫打赏</h4> <img src="/wp-content/themes/Ality/img/zhifubao.jpg"> </div>  <div class="lrewards-popover-close lrewards-close">×</div> </div>
+	<div class="social-main">
+		<span class="like">
+            <a href="javascript:;" data-action="ding" data-id="5166" title="若您愿意，除了点赞您还可以打赏，点击旁边的按钮哦。感谢。🙇‍" class="favorite"><i class="icon-zan"></i>喜欢 <i class="count">
+	            0</i>
+	        </a>
+		</span>
+		<span class="comment-s" id="lrewards"><a title="博爱的您有着广阔的天地">🙇‍💴施仁布泽</a><!-- <a href="https://woj.app/5166.html#respond">抢沙发</a> --></span>
+				<span class="share-s"  title="点击分享呦">
+			<div class="bdsharebuttonbox" style="padding-left: 13px;height:31px;margin-top: 4px !important;" ><A class=bds_more href="#" data-cmd="more"></A><A class=bds_weixin title=分享到微信 href="#" data-cmd="weixin"></A><A class=bds_qzone title=分享到QQ空间 href="#" data-cmd="qzone"></A><A class=bds_tsina title=分享到新浪微博 href="#" data-cmd="tsina"></A></div>
+		</span>
+				<script>window._bd_share_config = {
+    "common": {
+      "bdSnsKey": {},
+      "bdText": "",
+      "bdMini": "1",
+      "bdMiniList": false,
+      "bdPic": "",
+      "bdStyle": "0",
+      "bdSize": "16"
+    },
+    "share": {}
+  };
+  with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = '/static/api/js/share.js?v=89860593.js?cdnversion=' + ~ ( - new Date() / 36e5)];</script>
+	</div>
+	<div class="clear"></div>
+</div>	</div>
+		<!-- #content -->
+	<div class="authorbio">
+		<img alt='' src='https://secure.gravatar.com/avatar/17af2f447dc8bf15a813079c25cc5fd7?s=64&#038;d=monsterid&#038;r=g' srcset='https://secure.gravatar.com/avatar/17af2f447dc8bf15a813079c25cc5fd7?s=128&#038;d=monsterid&#038;r=g 2x' class='avatar avatar-64 photo' height='64' width='64' /><ul class="spostinfo">
+		<li><strong>版权声明：</strong>本站原创文章，由<a href="https://woj.app/author/gdd" title="由gdd发布" rel="author">gdd</a>发表在<a href="https://woj.app/category/water" rel="category tag">汪洋大海</a>分类下，于2019年05月10日最后更新</li>
+	<li><strong>转载请注明：</strong><a href="https://woj.app/5166.html" rel="bookmark" title="本文固定链接 https://woj.app/5166.html">针对php的web流量抓取、分析的应用></a> | <a title="蜗居"  href="https://woj.app" >蜗居</a> - <a title="点击复制此文链接" href="#" onclick="copy_code('https://woj.app/5166.html'); return false;"> +复制链接</a></li>
+	</ul>	</div>
+	
+	<div id="single-widget">
+		<aside id="related_post-2" class="widget widget_related_post"><h3 class="widget-title"><div class="s-icon"></div>相关文章</h3>
+<div id="related_post_widget">
+	<ul>
+				<li><i class="icon-li"></i><a href="https://woj.app/5603.html">扶墙需要你先了解V2Ray V2Ray服务器搭建</a></li>
+				<li><i class="icon-li"></i><a href="https://woj.app/5592.html">删除win10“添加或删除程序”列表存在的程序名</a></li>
+				<li><i class="icon-li"></i><a href="https://woj.app/5586.html">AttributeError: &#8216;str&#8217; object has no attribute &#8216;strftime&#8217;  解决方法</a></li>
+				<li><i class="icon-li"></i><a href="https://woj.app/5456.html">burp抓包小程序解决方案 &#8211; 安卓微信7.0不能抓 https方法</a></li>
+				<li><i class="icon-li"></i><a href="https://woj.app/5452.html">libXss.so.1 not found on the system</a></li>
+			</ul>
+</div>
+
+<div class="clear"></div></aside><aside id="random_post-2" class="widget widget_random_post"><h3 class="widget-title"><div class="s-icon"></div>随机文章</h3>
+<div id="random_post_widget">
+	<ul>
+					<li><a href="https://woj.app/2157.html" rel="bookmark" title="详细阅读 延长 XSS 生命期   作者：EtherDream"><i class="icon-li"></i>延长 XSS 生命期   作者：EtherDream</a></li>
+					<li><a href="https://woj.app/893.html" rel="bookmark" title="详细阅读 一年一年又一年，2016来了"><i class="icon-li"></i>一年一年又一年，2016来了</a></li>
+					<li><a href="https://woj.app/2065.html" rel="bookmark" title="详细阅读 密码保护：浏览器安全 之 Chrome XSS Auditor bypass"><i class="icon-li"></i>密码保护：浏览器安全 之 Chrome XSS Auditor bypass</a></li>
+					<li><a href="https://woj.app/927.html" rel="bookmark" title="详细阅读 win 10 激活方法+WIN 10激活密钥码"><i class="icon-li"></i>win 10 激活方法+WIN 10激活密钥码</a></li>
+					<li><a href="https://woj.app/5448.html" rel="bookmark" title="详细阅读 Web安全自查问题清单"><i class="icon-li"></i>Web安全自查问题清单</a></li>
+					</ul>
+</div>
+
+<div class="clear"></div></aside>		<div class="clear"></div>
+	</div>
+
+	<nav class="nav-single">
+		【上篇】<a href="https://woj.app/5148.html" rel="prev">python3.7+汉化PyQt5+pycharm 开发GUI程序环境</a><br/>【下篇】<a href="https://woj.app/5168.html" rel="next">pcap 恶意HTTP流量资源管理器</a>	</nav>
+	
+
+<!-- 引用 -->
+<div id="comments" class="comments-area">
+		
+		
+		<div id="respond" class="comment-respond">
+			<h3 id="reply-title" class="comment-reply-title">给我留言<small><a rel="nofollow" id="cancel-comment-reply-link" href="/5166.html#respond" style="display:none;">取消回复</a></small></h3>
+			
+			
+			<form action="https://woj.app/wp-comments-post.php" method="post" id="commentform">
+				
+								<div id="comment-author-info">
+					<p class="comment-form-author">
+						<input type="text" name="author" id="author" class="commenttext" value="" tabindex="1" />
+						<label for="author">昵称（必填）</label>
+					</p>
+					<p class="comment-form-email">
+						<input type="text" name="email" id="email" class="commenttext" value="" tabindex="2" />
+						<label for="email">邮箱（必填）</label>
+					</p>
+					<p class="comment-form-url">
+						<input type="text" name="url" id="url" class="commenttext" value="" tabindex="3" />
+						<label for="url">网址</label>
+					</p>
+				</div>
+				
+		        <p class="comment-tool">
+		        	<a class="tool-img" href='javascript:embedImage();' title="插入图片"><i class="icon-img"></i></a>
+		        	<a class="smiley" href="" title="插入表情"><i class="icon-smiley"></i></a>
+		        	<span class="smiley-box"><a href="javascript:grin(':?:')"><img src="https://woj.app/wp-includes/images/smilies/icon_question.gif" alt="" /></a>
+<a href="javascript:grin(':razz:')"><img src="https://woj.app/wp-includes/images/smilies/icon_razz.gif" alt="" /></a>
+<a href="javascript:grin(':sad:')"><img src="https://woj.app/wp-includes/images/smilies/icon_sad.gif" alt="" /></a>
+<a href="javascript:grin(':evil:')"><img src="https://woj.app/wp-includes/images/smilies/icon_evil.gif" alt="" /></a>
+<a href="javascript:grin(':!:')"><img src="https://woj.app/wp-includes/images/smilies/icon_exclaim.gif" alt="" /></a>
+<a href="javascript:grin(':smile:')"><img src="https://woj.app/wp-includes/images/smilies/icon_smile.gif" alt="" /></a>
+<a href="javascript:grin(':oops:')"><img src="https://woj.app/wp-includes/images/smilies/icon_redface.gif" alt="" /></a>
+<a href="javascript:grin(':grin:')"><img src="https://woj.app/wp-includes/images/smilies/icon_biggrin.gif" alt="" /></a>
+<a href="javascript:grin(':eek:')"><img src="https://woj.app/wp-includes/images/smilies/icon_surprised.gif" alt="" /></a>
+<a href="javascript:grin(':shock:')"><img src="https://woj.app/wp-includes/images/smilies/icon_eek.gif" alt="" /></a>
+<a href="javascript:grin(':???:')"><img src="https://woj.app/wp-includes/images/smilies/icon_confused.gif" alt="" /></a>
+<a href="javascript:grin(':cool:')"><img src="https://woj.app/wp-includes/images/smilies/icon_cool.gif" alt="" /></a>
+<a href="javascript:grin(':lol:')"><img src="https://woj.app/wp-includes/images/smilies/icon_lol.gif" alt="" /></a>
+<a href="javascript:grin(':mad:')"><img src="https://woj.app/wp-includes/images/smilies/icon_mad.gif" alt="" /></a>
+<a href="javascript:grin(':twisted:')"><img src="https://woj.app/wp-includes/images/smilies/icon_twisted.gif" alt="" /></a>
+<a href="javascript:grin(':roll:')"><img src="https://woj.app/wp-includes/images/smilies/icon_rolleyes.gif" alt="" /></a>
+<a href="javascript:grin(':wink:')"><img src="https://woj.app/wp-includes/images/smilies/icon_wink.gif" alt="" /></a>
+<a href="javascript:grin(':idea:')"><img src="https://woj.app/wp-includes/images/smilies/icon_idea.gif" alt="" /></a>
+<a href="javascript:grin(':arrow:')"><img src="https://woj.app/wp-includes/images/smilies/icon_arrow.gif" alt="" /></a>
+<a href="javascript:grin(':neutral:')"><img src="https://woj.app/wp-includes/images/smilies/icon_neutral.gif" alt="" /></a>
+<a href="javascript:grin(':cry:')"><img src="https://woj.app/wp-includes/images/smilies/icon_cry.gif" alt="" /></a>
+<a href="javascript:grin(':mrgreen:')"><img src="https://woj.app/wp-includes/images/smilies/icon_mrgreen.gif" alt="" /></a></span>
+		        </p>
+
+		        <p class="comment-form-comment"><textarea id="comment" name="comment" rows="4" tabindex="4"></textarea></p>
+
+				<p class="form-submit">
+					<input id="submit" name="submit" type="submit" tabindex="5" value="提&nbsp;交"/>
+					<input id="reset" name="reset" type="reset" tabindex="6" value="重&nbsp;写" />
+					<input type='hidden' name='comment_post_ID' value='5166' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="dfc3aaa0fa" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="115"/></p>				</p>
+			</form>
+			<script type="text/javascript">
+				document.getElementById("comment").onkeydown = function (moz_ev){
+				var ev = null;
+				if (window.event){
+				ev = window.event;
+				}else{
+				ev = moz_ev;
+				}
+				if (ev != null && ev.ctrlKey && ev.keyCode == 13){
+				document.getElementById("submit").click();}
+				}
+			</script>
+	 				</div>
+		</div>
+<!-- #comments -->	</div>
+<!-- #primary -->
+
+<div id="sidebar" class="widget-area">
+				<aside id="hot_post-2" class="widget widget_hot_post"><h3 class="widget-title"><p><i class="icon-st"></i></p>热门文章</h3>
+<div id="hot_post_widget">
+	<ul>
+	     
+	    <li><span class='li-icon li-icon-1'>1</span><a href="https://woj.app/5397.html">超详细centos7 安装最新破解(awvs)...</a></li><li><span class='li-icon li-icon-2'>2</span><a href="https://woj.app/5456.html">burp抓包小程序解决方案 &#8211; ...</a></li><li><span class='li-icon li-icon-3'>3</span><a href="https://woj.app/5448.html">Web安全自查问题清单</a></li><li><span class='li-icon li-icon-4'>4</span><a href="https://woj.app/5441.html">中国人应挺胸抬头的做人！！！对外...</a></li><li><span class='li-icon li-icon-5'>5</span><a href="https://woj.app/5578.html">这样回你微信的人，就别再联系了</a></li><li><span class='li-icon li-icon-6'>6</span><a href="https://woj.app/5288.html">警醒自己不能安逸 它会让你慢慢死去</a></li>	    			</ul>
+</div>
+
+<div class="clear"></div></aside><aside id="hot_comment-3" class="widget widget_hot_comment"><h3 class="widget-title"><p><i class="icon-st"></i></p>热评文章</h3>
+<div id="hot_comment_widget">
+	<ul>
+		
+<li><span class='li-icon li-icon-1'>1</span><a href= "https://woj.app/5641.html" rel="bookmark" title="2019/10/09 之最近的状态 (4条评论)" >2019/10/09 之最近的状态</a></li>
+<li><span class='li-icon li-icon-2'>2</span><a href= "https://woj.app/5441.html" rel="bookmark" title="中国人应挺胸抬头的做人！！！对外国人不要卑躬屈膝鞍前马后了行么？ (2条评论)" >中国人应挺胸抬头的做人！！！对外国人不要卑躬屈膝鞍前马后了行么？</a></li>
+<li><span class='li-icon li-icon-3'>3</span><a href= "https://woj.app/5648.html" rel="bookmark" title="mssql注入问题复现 (0条评论)" >mssql注入问题复现</a></li>
+<li><span class='li-icon li-icon-4'>4</span><a href= "https://woj.app/5448.html" rel="bookmark" title="Web安全自查问题清单 (0条评论)" >Web安全自查问题清单</a></li>
+<li><span class='li-icon li-icon-5'>5</span><a href= "https://woj.app/5452.html" rel="bookmark" title="libXss.so.1 not found on the system (0条评论)" >libXss.so.1 not found on the system</a></li>
+<li><span class='li-icon li-icon-6'>6</span><a href= "https://woj.app/5456.html" rel="bookmark" title="burp抓包小程序解决方案 - 安卓微信7.0不能抓 https方法 (0条评论)" >burp抓包小程序解决方案 - 安卓微信7.0不能抓 https方法</a></li>
+<li><span class='li-icon li-icon-7'>7</span><a href= "https://woj.app/5578.html" rel="bookmark" title="这样回你微信的人，就别再联系了 (0条评论)" >这样回你微信的人，就别再联系了</a></li>
+<li><span class='li-icon li-icon-8'>8</span><a href= "https://woj.app/5586.html" rel="bookmark" title="AttributeError: 'str' object has no attribute 'strftime'  解决方法 (0条评论)" >AttributeError: 'str' object has no attribute 'strftime'  解决方法</a></li>			</ul>
+</div>
+
+<div class="clear"></div></aside><aside id="views-2" class="widget widget_views"><h3 class="widget-title"><p><i class="icon-st"></i></p>浏览统计</h3><ul>
+<li><a href="https://woj.app/2332.html"  title="绕过微信各种限制 &ndash; 无限无实名注册微信帐号">绕过微信各种限制 &ndash; 无限无实名注册微信帐号</a> - 30,748 views</li><li><a href="https://woj.app/1439.html"  title="【升级版】最新特别完善版XSS平台源代码">【升级版】最新特别完善版XSS平台源代码</a> - 29,189 views</li><li><a href="https://woj.app/393.html"  title="安卓抓包 封包 改包 无限发送数据包">安卓抓包 封包 改包 无限发送数据包</a> - 28,090 views</li><li><a href="https://woj.app/about-me"  title="关于俺">关于俺</a> - 23,031 views</li><li><a href="https://woj.app/1752.html"  title="Breath and Life (呼吸与生命)">Breath and Life (呼吸与生命)</a> - 18,488 views</li><li><a href="https://woj.app/965.html"  title="Kali解决不全屏、不能拖拽、复制的毛病之安装vm. 主机虚拟机之间的复制粘贴">Kali解决不全屏、不能拖拽、复制的毛病之安装vm. 主机虚拟机之间的复制粘贴</a> - 17,452 views</li></ul>
+<div class="clear"></div></aside>		<div class="sidebar-roll">
+					</div>
+			</div>
+<div class="clear"></div>
+<footer id="footer">
+	<div class="site-info">
+		Copyright &copy; 2014--2019  <a title="蜗居"  href="https://woj.app" >蜗居</a>  保留所有权利.&nbsp;&nbsp;Blogger：admin@woj.app&nbsp;&nbsp;
+			</div>
+	<!-- .site-info -->
+<div id="sidr" style="display: none;"><a id="simple-menu-s" href="#sidr"><i class="icon-close"></i></a><div class="menu-%e8%8f%9c%e5%8d%953-container"><ul id="menu-%e8%8f%9c%e5%8d%953" class="menu"><li id="menu-item-921" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-921"><a title="虾米的蜗居" href="https://woj.app/">虾米</a></li>
+<li id="menu-item-917" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-917"><a href="https://woj.app/about-me">关于俺</a></li>
+<li id="menu-item-920" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-920"><a href="https://woj.app/category/personal-diary">个人日记</a></li>
+<li id="menu-item-918" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-918"><a href="https://woj.app/category/the-study-notes">学习笔记</a></li>
+<li id="menu-item-1474" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1474"><a href="https://woj.app/category/invasion_penetration">漏洞安全</a></li>
+<li id="menu-item-919" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-919"><a href="https://woj.app/category/water">汪洋大海</a></li>
+<li id="menu-item-4708" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-4708"><a href="https://woj.app/category/soft">精品软件</a></li>
+<li id="menu-item-1727" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1727"><a href="https://woj.app/category/music">音乐之声</a></li>
+</ul></div></div>
+
+<div id="login">
+	<h1>用户登录</h1>
+	<form action="https://woj.app/wp-login.php?redirect_to=https%3A%2F%2Fwoj.app%2F5166.html" method="post" id="loginform">
+		<fieldset id="inputs">
+			<input id="username" type="text"  name="log" id="log" placeholder="名称" required>
+			<input id="password" type="password" name="pwd" id="pwd" placeholder="密码" required>
+		</fieldset>
+		<fieldset id="actions">
+		<input type="submit" id="submit" value="登录">
+		<input type="hidden" name="redirect_to" value="/5166.html" />
+		<label><input type="checkbox" name="rememberme" id="modlogn_remember" value="yes"  checked="checked" alt="Remember Me" >记住登录信息</label>
+		</fieldset>
+	</form>
+</div>
+<ul id="scroll">
+	<li><a class="scroll_t" title="返回顶部"><i class="icon-scroll_t"></i></a></li>
+	
+			<li><a class="scroll_c" title="查看评论"><i class="icon-scroll_c"></i></a></li>
+		<li><a class="scroll_b" title="转到底部"><i class="icon-scroll_b"></i></a></li>
+</ul>
+
+</footer>
+<!-- #footer -->
+</div><!-- #main -->
+</div><!-- #page -->
+<link rel="stylesheet" href="https://woj.app/wp-content/plugins/myqaptcha/jquery/myQaptcha.jquery.css" type="text/css" />
+<script type="text/javascript" src="https://woj.app/wp-content/plugins/myqaptcha/jquery/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://woj.app/wp-content/plugins/myqaptcha/jquery/jquery.ui.touch.js"></script>
+<script type="text/javascript">var myQaptchaJqueryPage="https://woj.app/wp-content/plugins/myqaptcha/jquery/myQaptcha.jquery.php";</script>
+<script type="text/javascript" src="https://woj.app/wp-content/plugins/myqaptcha/jquery/myqaptcha.jquery.js"></script>
+<script type="text/javascript">var newQapTcha = document.createElement("div");newQapTcha.className="QapTcha";var tagIDComment=document.getElementById("comment");if(tagIDComment){tagIDComment.parentNode.insertBefore(newQapTcha,tagIDComment);}else{var allTagP = document.getElementsByTagName("p");for(var p=0;p<allTagP.length;p++){var allTagTA = allTagP[p].getElementsByTagName("textarea");if(allTagTA.length>0){allTagP[p].parentNode.insertBefore(newQapTcha,allTagP[p]);}}}jQuery(document).ready(function(){jQuery('.QapTcha').QapTcha({disabledSubmit:true,autoRevert:true});});</script>
+<script type='text/javascript' src='https://woj.app/wp-content/themes/Ality/js/jquery.sidr.min.js?ver=1.2.1'></script>
+<script type='text/javascript' src='https://woj.app/wp-content/plugins/wp-syntax/js/wp-syntax.js?ver=1.1'></script>
+<script type='text/javascript' src='https://woj.app/wp-includes/js/wp-embed.min.js?ver=5.2.4'></script>
+<script async="async" type='text/javascript' src='https://woj.app/wp-content/plugins/akismet/_inc/form.js?ver=4.1.2'></script>
+</body>
+</html>
